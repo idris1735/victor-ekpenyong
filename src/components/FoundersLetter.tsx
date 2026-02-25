@@ -1,33 +1,61 @@
-import { useEffect, useRef, useState } from "react";
-
-const useInView = (threshold = 0.15) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-};
+import { motion } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
+import textureDark from "@/assets/texture-dark.png";
 
 const FoundersLetter = () => {
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView(0.1);
 
   return (
-    <section className="section-padding bg-card/20 border-t border-border" ref={ref}>
-      <div className={`max-w-3xl mx-auto text-center transition-all duration-1000 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-sm tracking-[0.3em] uppercase text-primary mb-6">The Founder's Letter</p>
-        <div className="w-12 h-0.5 bg-primary mx-auto mb-10" />
-        <blockquote className="font-display text-2xl md:text-3xl italic leading-relaxed text-foreground mb-10">
-          "I believe the future of Africa's energy sector will be built by those willing to combine technical mastery with bold vision. My mission is to continue building solutions that create impact, empower communities, and inspire the next generation of leaders."
-        </blockquote>
-        <p className="text-primary font-display text-lg tracking-wide">
-          The future will not be inherited. It will be built.
-        </p>
-        <p className="text-muted-foreground text-sm mt-4 tracking-widest uppercase">— Dr. Victor Ekpenyong</p>
+    <section ref={ref} className="relative overflow-hidden">
+      {/* Background texture */}
+      <div className="absolute inset-0">
+        <img src={textureDark} alt="" className="w-full h-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-background/80" />
+      </div>
+
+      <div className="relative z-10 section-padding">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 1 }}
+          >
+            <div className="flex items-center justify-center gap-4 mb-10">
+              <div className="w-16 h-px bg-gradient-to-r from-transparent to-primary" />
+              <p className="text-xs tracking-[0.5em] uppercase text-primary">The Founder's Letter</p>
+              <div className="w-16 h-px bg-gradient-to-l from-transparent to-primary" />
+            </div>
+
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={inView ? { scale: 1, opacity: 1 } : {}}
+              transition={{ duration: 1.2, delay: 0.3 }}
+            >
+              <span className="font-display text-8xl text-primary/20 leading-none block mb-4">"</span>
+              <blockquote className="font-display text-2xl md:text-3xl lg:text-4xl italic leading-[1.4] text-foreground -mt-16 mb-12">
+                I believe the future of Africa's energy sector will be built by those willing to combine technical mastery with bold vision. My mission is to continue building solutions that create impact, empower communities, and inspire the next generation of leaders.
+              </blockquote>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.8, duration: 0.6 }}
+              className="space-y-4"
+            >
+              <p className="text-gradient-gold font-display text-xl md:text-2xl tracking-wide">
+                The future will not be inherited. It will be built.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-8 h-px bg-primary/40" />
+                <p className="text-xs text-muted-foreground tracking-[0.4em] uppercase">
+                  Dr. Victor Ekpenyong
+                </p>
+                <div className="w-8 h-px bg-primary/40" />
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

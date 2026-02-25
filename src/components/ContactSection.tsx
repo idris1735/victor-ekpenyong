@@ -1,45 +1,63 @@
-import { useEffect, useRef, useState } from "react";
-
-const useInView = (threshold = 0.15) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-};
+import { motion } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 
 const areas = ["Speaking", "Partnerships", "Advisory", "Foundation"];
 
 const ContactSection = () => {
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView(0.1);
 
   return (
-    <section id="contact" className="section-padding bg-background border-t border-border" ref={ref}>
-      <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-        <p className="text-sm tracking-[0.3em] uppercase text-primary mb-4">Engage</p>
-        <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">
-          Start a <span className="text-gradient-gold">Conversation</span>
-        </h2>
-        <div className="w-12 h-0.5 bg-primary mx-auto mb-8" />
-        <p className="text-muted-foreground mb-12 max-w-lg mx-auto">
-          Meaningful collaborations begin with a conversation.
-        </p>
+    <section id="contact" ref={ref} className="section-padding border-t border-border relative overflow-hidden">
+      <div className="max-w-5xl mx-auto text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1 }}
+        >
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-12 h-px bg-primary" />
+            <p className="text-xs tracking-[0.4em] uppercase text-primary">Engage</p>
+            <div className="w-12 h-px bg-primary" />
+          </div>
+          <h2 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[0.95]">
+            Start a
+            <br />
+            <span className="text-gradient-gold">Conversation</span>
+          </h2>
+          <p className="text-muted-foreground text-lg mb-14 max-w-md mx-auto">
+            Meaningful collaborations begin with a conversation.
+          </p>
+        </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {areas.map((area) => (
-            <span
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4, duration: 0.8 }}
+          className="flex flex-wrap justify-center gap-4"
+        >
+          {areas.map((area, i) => (
+            <motion.span
               key={area}
-              className="px-6 py-2 border border-primary/30 text-primary text-sm tracking-widest uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-300 cursor-pointer"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.5 + i * 0.1, duration: 0.4 }}
+              className="px-8 py-3 border border-primary/20 text-primary text-xs tracking-[0.3em] uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-500 cursor-pointer hover:shadow-[0_0_30px_hsl(40_70%_50%/0.2)]"
             >
               {area}
-            </span>
+            </motion.span>
           ))}
-        </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ delay: 1, duration: 1 }}
+          className="mt-20 pt-8 border-t border-border/50"
+        >
+          <p className="text-muted-foreground text-sm italic font-display">
+            "Meaningful collaborations begin with a conversation."
+          </p>
+        </motion.div>
       </div>
     </section>
   );
