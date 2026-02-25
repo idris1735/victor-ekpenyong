@@ -1,62 +1,90 @@
 import { motion } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
-import portrait from "@/assets/portrait.png";
+import heroPortrait from "@/assets/hero-portrait.png";
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  entered: boolean;
+}
+
+const HeroSection = ({ entered }: HeroSectionProps) => {
   return (
     <section className="relative min-h-screen flex items-end overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0">
-        <img src={heroBg} alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-background/40" />
-      </div>
-
-      {/* Portrait */}
       <motion.div
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="absolute right-0 bottom-0 hidden lg:block w-[45%] h-full"
+        initial={{ scale: 1.15 }}
+        animate={entered ? { scale: 1 } : {}}
+        transition={{ duration: 2.5, ease: "easeOut" }}
+        className="absolute inset-0"
+      >
+        <img src={heroBg} alt="" className="w-full h-full object-cover" />
+      </motion.div>
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" />
+
+      {/* Portrait - blended into hero */}
+      <motion.div
+        initial={{ opacity: 0, x: 80 }}
+        animate={entered ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 1.8, delay: 0.6, ease: "easeOut" }}
+        className="absolute right-0 bottom-0 hidden lg:block w-[50%] xl:w-[45%] h-full"
       >
         <img
-          src={portrait}
+          src={heroPortrait}
           alt="Dr. Victor Ekpenyong"
           className="w-full h-full object-cover object-top"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        {/* Blend edges into background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
+        {/* Gold tint overlay for blending */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, transparent 30%, hsl(40 70% 50% / 0.05) 100%)" }} />
       </motion.div>
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-24 md:pb-32 pt-40">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-20 md:pb-28 pt-40">
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
+          animate={entered ? { opacity: 1 } : {}}
+          transition={{ delay: 0.8, duration: 0.8 }}
           className="flex items-center gap-3 mb-8"
         >
-          <div className="w-12 h-px bg-primary" />
+          <motion.div
+            initial={{ width: 0 }}
+            animate={entered ? { width: 48 } : {}}
+            transition={{ delay: 1, duration: 0.8 }}
+            className="h-px bg-primary"
+          />
           <p className="text-xs tracking-[0.4em] uppercase text-primary">
             Founder &bull; Engineer &bull; Visionary
           </p>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
-          className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] mb-8 max-w-4xl"
-        >
-          Dr. Victor
-          <br />
-          <span className="text-gradient-gold">Ekpenyong</span>
-        </motion.h1>
+        <div className="overflow-hidden mb-4">
+          <motion.h1
+            initial={{ y: "110%" }}
+            animate={entered ? { y: 0 } : {}}
+            transition={{ delay: 1, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9]"
+          >
+            Dr. Victor
+          </motion.h1>
+        </div>
+        <div className="overflow-hidden mb-10">
+          <motion.h1
+            initial={{ y: "110%" }}
+            animate={entered ? { y: 0 } : {}}
+            transition={{ delay: 1.2, duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] text-gradient-gold"
+          >
+            Ekpenyong
+          </motion.h1>
+        </div>
 
         <motion.p
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
+          animate={entered ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.6, duration: 0.8 }}
           className="text-lg md:text-xl text-muted-foreground max-w-xl mb-12 font-light leading-relaxed"
         >
           Engineering Energy. Building Enduring Impact.
@@ -64,29 +92,29 @@ const HeroSection = () => {
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.6 }}
+          animate={entered ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 1.9, duration: 0.6 }}
           className="flex flex-wrap items-center gap-5"
         >
           <button
             onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
-            className="group px-10 py-4 bg-primary text-primary-foreground text-xs tracking-[0.3em] uppercase transition-all duration-500 hover:shadow-[0_0_40px_hsl(40_70%_50%/0.3)]"
+            className="group relative px-10 py-4 bg-primary text-primary-foreground text-xs tracking-[0.3em] uppercase overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_hsl(40_70%_50%/0.3)]"
           >
-            Explore His Legacy
+            <span className="relative z-10">Explore His Legacy</span>
           </button>
           <button
-            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" })}
             className="px-10 py-4 border border-primary/40 text-primary text-xs tracking-[0.3em] uppercase hover:bg-primary/10 transition-all duration-500"
           >
-            Connect
+            View Gallery
           </button>
         </motion.div>
 
-        {/* Stats bar */}
+        {/* Stats */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={entered ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 2.2, duration: 0.8 }}
           className="flex flex-wrap gap-12 mt-20 pt-8 border-t border-primary/10"
         >
           {[
@@ -105,9 +133,9 @@ const HeroSection = () => {
       {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        animate={entered ? { opacity: 1 } : {}}
+        transition={{ delay: 2.8, duration: 1 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
         <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Scroll</span>
         <motion.div
