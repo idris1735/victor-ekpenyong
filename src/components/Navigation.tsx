@@ -1,13 +1,28 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import veLogo from "@/assets/ve-logo-cropped.png";
 
-const navItems = ["About", "Kenyon", "Impact", "Vision", "Contact"];
+const defaultNavItems = ["About", "Gallery", "Kenyon", "Impact", "Vision", "Contact", "Blog"];
 
-const Navigation = () => {
+interface NavigationProps {
+  settings?: Record<string, unknown>;
+}
+
+const Navigation = ({ settings }: NavigationProps) => {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navigation = (settings?.navigation as { navItems?: string[] } | undefined) || {};
+  const brand = (settings?.brand as { logoUrl?: string } | undefined) || {};
+  const navItemsBase = Array.isArray(navigation.navItems) && navigation.navItems.length > 0
+    ? navigation.navItems
+    : defaultNavItems;
+  const withGallery = navItemsBase.includes("Gallery") ? navItemsBase : [...navItemsBase, "Gallery"];
+  const navItems = withGallery.includes("Blog") ? withGallery : [...withGallery, "Blog"];
+  const logoSrc = brand.logoUrl || veLogo;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -17,7 +32,31 @@ const Navigation = () => {
 
   const scrollTo = (id: string) => {
     setMobileOpen(false);
-    document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: "smooth" });
+    const clean = id.toLowerCase();
+    const existing = document.getElementById(clean);
+    if (existing) {
+      existing.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    navigate("/");
+    window.setTimeout(() => {
+      document.getElementById(clean)?.scrollIntoView({ behavior: "smooth" });
+    }, 220);
+  };
+
+  const handleNavClick = (item: string) => {
+    const clean = item.toLowerCase();
+    if (clean === "gallery") {
+      setMobileOpen(false);
+      navigate("/gallery");
+      return;
+    }
+    if (clean === "blog") {
+      setMobileOpen(false);
+      navigate("/blog");
+      return;
+    }
+    scrollTo(item);
   };
 
   return (
@@ -39,7 +78,7 @@ const Navigation = () => {
             aria-label="Go to top"
           >
             <img
-              src={veLogo}
+              src={logoSrc}
               alt="VE logo"
               className={`h-8 md:h-8 w-auto object-contain transition-all duration-500 [filter:drop-shadow(0_0_16px_hsl(40_70%_50%/0.35))_brightness(1.14)_contrast(1.06)] ${
                 scrolled ? "opacity-90" : "opacity-100"
@@ -53,7 +92,7 @@ const Navigation = () => {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * i + 0.5 }}
-                onClick={() => scrollTo(item)}
+                onClick={() => handleNavClick(item)}
                 className="relative text-xs tracking-[0.25em] uppercase text-muted-foreground hover:text-primary transition-colors duration-500 group"
               >
                 {item}
@@ -85,7 +124,7 @@ const Navigation = () => {
                 initial={{ opacity: 0, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.05 * i }}
-                onClick={() => scrollTo(item)}
+                onClick={() => handleNavClick(item)}
                 className="font-display text-3xl text-foreground hover:text-primary transition-colors"
               >
                 {item}

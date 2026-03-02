@@ -1,10 +1,16 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 
-const areas = ["Speaking", "Partnerships", "Advisory", "Foundation"];
+interface ContactSectionProps {
+  data?: Record<string, unknown>;
+}
 
-const ContactSection = () => {
+const fallbackAreas = ["Speaking", "Partnerships", "Advisory", "Foundation"];
+
+const ContactSection = ({ data }: ContactSectionProps) => {
   const { ref, inView } = useInView(0.1);
+  const contactData = data || {};
+  const areas = Array.isArray(contactData.areas) ? (contactData.areas as string[]) : fallbackAreas;
 
   return (
     <section id="contact" ref={ref} className="section-padding border-t border-border relative overflow-hidden">
@@ -16,16 +22,16 @@ const ContactSection = () => {
         >
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="w-12 h-px bg-primary" />
-            <p className="text-xs tracking-[0.4em] uppercase text-primary">Engage</p>
+            <p className="text-xs tracking-[0.4em] uppercase text-primary">{String(contactData.eyebrow || "Engage")}</p>
             <div className="w-12 h-px bg-primary" />
           </div>
           <h2 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[0.95]">
-            Start a
+            {String(contactData.titleLine1 || "Start a")}
             <br />
-            <span className="text-gradient-gold">Conversation</span>
+            <span className="text-gradient-gold">{String(contactData.titleLine2 || "Conversation")}</span>
           </h2>
           <p className="text-muted-foreground text-lg mb-14 max-w-md mx-auto">
-            Meaningful collaborations begin with a conversation.
+            {String(contactData.subtitle || "Meaningful collaborations begin with a conversation.")}
           </p>
         </motion.div>
 
@@ -37,7 +43,7 @@ const ContactSection = () => {
         >
           {areas.map((area, i) => (
             <motion.span
-              key={area}
+              key={`${area}-${i}`}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: 0.5 + i * 0.1, duration: 0.4 }}
@@ -55,7 +61,7 @@ const ContactSection = () => {
           className="mt-20 pt-8 border-t border-border/50"
         >
           <p className="text-muted-foreground text-sm italic font-display">
-            "Meaningful collaborations begin with a conversation."
+            {String(contactData.bottomQuote || '"Meaningful collaborations begin with a conversation."')}
           </p>
         </motion.div>
       </div>

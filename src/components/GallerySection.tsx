@@ -1,5 +1,6 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useInView } from "@/hooks/useInView";
 
 import galleryEngineering from "@/assets/gallery-life-engineering.jpg";
@@ -9,7 +10,11 @@ import galleryCommunity from "@/assets/gallery-life-community.jpg";
 import galleryRecognition from "@/assets/gallery-life-recognition.jpg";
 import galleryPortrait from "@/assets/gallery-life-ve.jpg";
 
-const images = [
+interface GallerySectionProps {
+  data?: Record<string, unknown>;
+}
+
+const fallbackImages = [
   { src: galleryEngineering, alt: "Engineering leadership in action", label: "Engineering", span: "col-span-2 row-span-1" },
   { src: galleryRecognition, alt: "Recognition moment", label: "Recognition", span: "col-span-1 row-span-2" },
   { src: galleryField, alt: "Operations on the field", label: "In the Field", span: "col-span-1 row-span-1" },
@@ -18,9 +23,23 @@ const images = [
   { src: galleryPortrait, alt: "Dr. Victor portrait", label: "Dr. Victor", span: "col-span-1 row-span-1" },
 ];
 
-const GallerySection = () => {
+const GallerySection = ({ data }: GallerySectionProps) => {
   const { ref, inView } = useInView(0.05);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  const galleryData = data || {};
+  const imagesInput = Array.isArray(galleryData.images)
+    ? (galleryData.images as Array<{ src?: string; alt?: string; label?: string; span?: string }>)
+    : fallbackImages;
+
+  const images = imagesInput.length > 0
+    ? imagesInput.map((image, index) => ({
+        src: image.src || fallbackImages[index % fallbackImages.length].src,
+        alt: image.alt || fallbackImages[index % fallbackImages.length].alt,
+        label: image.label || fallbackImages[index % fallbackImages.length].label,
+        span: image.span || fallbackImages[index % fallbackImages.length].span,
+      }))
+    : fallbackImages;
 
   return (
     <section id="gallery" ref={ref} className="section-padding bg-background">
@@ -33,21 +52,21 @@ const GallerySection = () => {
         >
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="w-16 h-px bg-gradient-to-r from-transparent to-primary" />
-            <p className="text-xs tracking-[0.5em] uppercase text-primary">Portfolio</p>
+            <p className="text-xs tracking-[0.5em] uppercase text-primary">{String(galleryData.eyebrow || "Portfolio")}</p>
             <div className="w-16 h-px bg-gradient-to-l from-transparent to-primary" />
           </div>
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            A Life in <span className="text-gradient-gold">Frames</span>
+            {String(galleryData.titleLine1 || "A Life in")} <span className="text-gradient-gold">{String(galleryData.titleLine2 || "Frames")}</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-lg mx-auto">
-            Moments that define a legacy - from leadership to community impact.
+            {String(galleryData.subtitle || "Moments that define a legacy - from leadership to community impact.")}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 auto-rows-[250px] md:auto-rows-[280px]">
           {images.map((img, i) => (
             <motion.div
-              key={img.label}
+              key={`${img.label}-${i}`}
               initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 * i + 0.3, duration: 0.8 }}
@@ -89,6 +108,15 @@ const GallerySection = () => {
               </motion.div>
             </motion.div>
           ))}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            to="/gallery"
+            className="inline-flex items-center border border-primary/40 px-8 py-3 text-xs tracking-[0.3em] uppercase text-primary hover:bg-primary/10 transition-all duration-500"
+          >
+            Open Full Gallery
+          </Link>
         </div>
       </div>
     </section>

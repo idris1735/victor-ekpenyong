@@ -1,22 +1,69 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import { useCounter } from "@/hooks/useCounter";
 import engineering from "@/assets/engineering.png";
 
-const AboutSection = () => {
+interface AboutSectionProps {
+  data?: Record<string, unknown>;
+}
+
+const fallbackEducation = [
+  { school: "Oxford Said Business School", type: "Executive Education" },
+  { school: "Harvard Business School", type: "Executive Education" },
+  { school: "Lagos Business School", type: "Executive Education" },
+];
+
+const fallbackStats = [
+  { num: "15+", label: "Years in Energy" },
+  { num: "3", label: "Elite Business Schools" },
+  { num: "Infinity", label: "Lives Impacted" },
+];
+
+const AboutSection = ({ data }: AboutSectionProps) => {
   const { ref, inView } = useInView(0.1);
-  const years = useCounter(15, 2000, inView);
-  const schools = useCounter(3, 1800, inView);
+  const aboutData = data || {};
+
+  const statsInput = Array.isArray(aboutData.stats)
+    ? (aboutData.stats as Array<{ num?: string; label?: string }>)
+    : fallbackStats;
+  const stats = statsInput.length > 0 ? statsInput : fallbackStats;
+
+  const yearsTarget = Number.parseInt(String(stats[0]?.num || "15"), 10);
+  const schoolsTarget = Number.parseInt(String(stats[1]?.num || "3"), 10);
+
+  const years = useCounter(Number.isFinite(yearsTarget) ? yearsTarget : 15, 2000, inView);
+  const schools = useCounter(Number.isFinite(schoolsTarget) ? schoolsTarget : 3, 1800, inView);
+
+  const displayStats = stats.map((stat, index) => {
+    const rawNum = String(stat.num || "");
+    if (index === 0 && Number.isFinite(yearsTarget)) {
+      return {
+        num: rawNum.includes("+") ? `${years}+` : String(years),
+        label: stat.label || "Years in Energy",
+      };
+    }
+    if (index === 1 && Number.isFinite(schoolsTarget)) {
+      return {
+        num: String(schools),
+        label: stat.label || "Elite Business Schools",
+      };
+    }
+    return {
+      num: rawNum.toLowerCase() === "infinity" ? "∞" : rawNum,
+      label: stat.label || "Lives Impacted",
+    };
+  });
+
+  const education = Array.isArray(aboutData.education)
+    ? (aboutData.education as Array<{ school?: string; type?: string }>)
+    : fallbackEducation;
+
+  const image = String(aboutData.image || engineering);
 
   return (
     <section id="about" ref={ref} className="relative overflow-hidden">
-      {/* Full-width image break */}
       <div className="relative h-[50vh] overflow-hidden">
-        <img
-          src={engineering}
-          alt="Engineering excellence"
-          className="w-full h-full object-cover"
-        />
+        <img src={image} alt="Engineering excellence" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/20 to-background" />
         <div className="absolute inset-0 bg-primary/5" />
         <motion.div
@@ -27,16 +74,14 @@ const AboutSection = () => {
         >
           <div className="w-full max-w-5xl">
             <div className="text-center mb-8">
-              <p className="text-sm tracking-[0.4em] uppercase text-primary/90">Years of Excellence</p>
+              <p className="text-sm tracking-[0.4em] uppercase text-primary/90">
+                {String(aboutData.yearsHeadline || "Years of Excellence")}
+              </p>
             </div>
             <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-              {[
-                { num: `${years}+`, label: "Years in Energy" },
-                { num: `${schools}`, label: "Elite Business Schools" },
-                { num: "∞", label: "Lives Impacted" },
-              ].map((stat, i) => (
+              {displayStats.map((stat, i) => (
                 <motion.div
-                  key={stat.label}
+                  key={`${stat.label}-${i}`}
                   initial={{ opacity: 0, y: 24, scale: 0.96 }}
                   animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
                   transition={{ delay: 0.15 + i * 0.12, duration: 0.7 }}
@@ -50,9 +95,7 @@ const AboutSection = () => {
                   >
                     {stat.num}
                   </motion.p>
-                  <p className="text-[11px] md:text-xs tracking-[0.26em] uppercase text-foreground/90 mt-2">
-                    {stat.label}
-                  </p>
+                  <p className="text-[11px] md:text-xs tracking-[0.26em] uppercase text-foreground/90 mt-2">{stat.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -60,10 +103,8 @@ const AboutSection = () => {
         </motion.div>
       </div>
 
-      {/* Content */}
       <div className="section-padding">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-5 gap-16 items-start">
-          {/* Left column */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -72,22 +113,27 @@ const AboutSection = () => {
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-px bg-primary" />
-              <p className="text-xs tracking-[0.4em] uppercase text-primary">About</p>
+              <p className="text-xs tracking-[0.4em] uppercase text-primary">{String(aboutData.eyebrow || "About")}</p>
             </div>
             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-[0.95]">
-              Upstream Engineering
+              {String(aboutData.titleLine1 || "Upstream Engineering")}
               <br />
-              <span className="text-gradient-gold">Specialist</span>
+              <span className="text-gradient-gold">{String(aboutData.titleLine2 || "Specialist")}</span>
             </h2>
             <p className="text-muted-foreground leading-[1.8] text-lg mb-6 max-w-2xl">
-              With over 15 years of experience in upstream oil and gas engineering, Dr. Victor Ekpenyong has built a reputation for combining deep technical expertise with entrepreneurial leadership.
+              {String(
+                aboutData.paragraph1 ||
+                  "With over 15 years of experience in upstream oil and gas engineering, Dr. Victor Ekpenyong has built a reputation for combining deep technical expertise with entrepreneurial leadership.",
+              )}
             </p>
             <p className="text-muted-foreground leading-[1.8] max-w-2xl">
-              His work spans drilling support, well control, asset integrity, and production optimization across complex operating environments — advancing African engineering capacity through globally competitive solutions.
+              {String(
+                aboutData.paragraph2 ||
+                  "His work spans drilling support, well control, asset integrity, and production optimization across complex operating environments - advancing African engineering capacity through globally competitive solutions.",
+              )}
             </p>
           </motion.div>
 
-          {/* Right column */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -96,35 +142,34 @@ const AboutSection = () => {
           >
             <div>
               <h3 className="font-display text-lg font-semibold text-primary mb-6 tracking-wide">
-                Academic & Global Leadership
+                {String(aboutData.rightHeading || "Academic & Global Leadership")}
               </h3>
-              {[
-                { school: "Oxford Saïd Business School", type: "Executive Education" },
-                { school: "Harvard Business School", type: "Executive Education" },
-                { school: "Lagos Business School", type: "Executive Education" },
-              ].map((edu, i) => (
+              {education.map((edu, i) => (
                 <motion.div
-                  key={i}
+                  key={`${edu.school}-${i}`}
                   initial={{ opacity: 0, x: 20 }}
                   animate={inView ? { opacity: 1, x: 0 } : {}}
                   transition={{ delay: 0.6 + i * 0.15, duration: 0.6 }}
                   className="group border-l-2 border-primary/20 pl-6 py-4 mb-2 hover:border-primary hover:bg-primary/5 transition-all duration-500"
                 >
                   <p className="font-display text-lg font-medium text-foreground group-hover:text-primary transition-colors duration-300">
-                    {edu.school}
+                    {String(edu.school || "")}
                   </p>
-                  <p className="text-xs text-muted-foreground tracking-[0.2em] uppercase mt-1">
-                    {edu.type}
-                  </p>
+                  <p className="text-xs text-muted-foreground tracking-[0.2em] uppercase mt-1">{String(edu.type || "")}</p>
                 </motion.div>
               ))}
             </div>
 
             <div className="p-8 bg-card/60 backdrop-blur-sm border border-border relative overflow-hidden group hover:border-primary/30 transition-all duration-500">
               <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-primary/50 via-primary/20 to-transparent" />
-              <h3 className="font-display text-sm tracking-[0.2em] uppercase text-primary mb-4">Philosophy</h3>
+              <h3 className="font-display text-sm tracking-[0.2em] uppercase text-primary mb-4">
+                {String(aboutData.philosophyTitle || "Philosophy")}
+              </h3>
               <p className="text-muted-foreground text-sm leading-[1.8] italic">
-                "Sustainable enterprise growth is built on technical credibility, disciplined execution, and a strong commitment to people development."
+                {String(
+                  aboutData.philosophyText ||
+                    '"Sustainable enterprise growth is built on technical credibility, disciplined execution, and a strong commitment to people development."',
+                )}
               </p>
             </div>
           </motion.div>

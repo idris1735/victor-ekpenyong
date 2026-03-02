@@ -1,58 +1,96 @@
-# Dr. Victor Ekpenyong — Personal Portfolio
+﻿# Dr. Victor Ekpenyong Portfolio + CMS
 
-A cinematic, immersive portfolio website for **Dr. Victor Ekpenyong** — Founder of Kenyon International, upstream engineering specialist, philanthropist, and visionary leader in Africa's energy sector.
+This project now runs as a single Node app with:
+- Public site (`/`)
+- Admin backend (`/backend`)
+- PostgreSQL content store
+- File uploads (`/uploads/*`)
 
-## ✨ Features
+## Stack
 
-- **Cinematic Preloader** — Monogram reveal with gold accents and grand entrance animation
-- **Immersive Hero** — Full-bleed background with blended portrait and animated statistics
-- **About Section** — 15+ years of engineering excellence with academic credentials
-- **Gallery** — "A Life in Frames" masonry grid with hover effects
-- **Kenyon International** — Company showcase with capability grid
-- **Impact & Philanthropy** — Victor & Helen Foundation highlights
-- **Vision for Africa** — Leadership philosophy and speaking topics
-- **Founder's Letter** — Editorial-style closing statement
-- **Contact** — Direct outreach section
+- React 18 + TypeScript + Vite
+- Express 5 API/server
+- PostgreSQL (`pg`)
+- Cookie session auth + CSRF protection
+- Multer uploads (filesystem)
 
-## 🎨 Design
+## API Endpoints
 
-- Dark luxury aesthetic with gold (#C8A55C) accents on deep navy
-- Custom typography pairing: Playfair Display + Inter
-- Scroll-triggered animations via Framer Motion
-- Fully responsive across all devices
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `POST /api/auth/password`
+- `GET /api/site`
+- `PUT /api/site`
+- `GET /api/pages/:slug`
+- `PUT /api/pages/:slug`
+- `GET /api/posts`
+- `GET /api/posts/:slug`
+- `POST /api/posts`
+- `PUT /api/posts/:id`
+- `DELETE /api/posts/:id`
+- `POST /api/uploads`
+- `GET /api/media`
+- `DELETE /api/media/:id`
 
-## 🛠 Tech Stack
+## Local Setup
 
-- **React 18** + **TypeScript**
-- **Vite** — Lightning-fast dev server
-- **Tailwind CSS** — Utility-first styling with custom design tokens
-- **Framer Motion** — Scroll & entrance animations
-- **shadcn/ui** — Accessible component primitives
-
-## 🚀 Getting Started
-
-```sh
-# Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Install dependencies
+```bash
 npm install
+cp .env.example .env
+# edit .env with your PostgreSQL credentials and session secret
+npm run setup:local
+```
 
-# Start development server
+Run frontend and backend in separate terminals:
+
+```bash
+npm run dev:api
 npm run dev
 ```
 
-## 📁 Project Structure
+- Frontend: `http://localhost:8080`
+- Backend API: `http://localhost:3000`
 
+Default seed admin (change immediately):
+- Email: `admin@example.com`
+- Password: `ChangeMe123!`
+
+If login fails, reset admin quickly:
+
+```bash
+npm run reset:admin
 ```
-src/
-├── assets/          # Hero, gallery, and section images
-├── components/      # All section components + UI primitives
-├── hooks/           # useInView, useCounter, useMobile
-├── pages/           # Index page + 404
-└── index.css        # Design system tokens & global styles
+
+## Production Build
+
+```bash
+npm run build
+npm run start
 ```
 
-## 📝 License
+`npm run start` serves:
+- built `dist` files
+- `/api` routes
+- `/uploads` static files
 
-© 2025 Dr. Victor Ekpenyong. All rights reserved.
+## cPanel Deploy Notes
+
+1. Create PostgreSQL DB/user in cPanel.
+2. Set environment variables from `.env.example` in Node App config.
+3. Upload project, install deps, and run:
+   - `npm run migrate`
+   - `npm run seed`
+   - `npm run build`
+4. Set Node app startup file to: `server/index.js`.
+5. Restart Node app from cPanel.
+
+## Admin Usage
+
+- Login: `/backend/login`
+- Dashboard: `/backend`
+- Edit homepage sections: `/backend/pages`
+- Manage blog posts: `/backend/posts`
+- Manage uploads: `/backend/media`
+- Global settings JSON: `/backend/settings`
+- Password change: `/backend/profile`

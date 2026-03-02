@@ -1,9 +1,13 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Music2 } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 
-const TIKTOK_POSTS = [
+interface SocialSectionProps {
+  data?: Record<string, unknown>;
+}
+
+const fallbackPosts = [
   "https://www.tiktok.com/@victoredikan3/video/7605180016111963413",
   "https://www.tiktok.com/@victoredikan3/video/7542960456965573896",
   "https://www.tiktok.com/@victoredikan3/video/7542263584118590738",
@@ -17,8 +21,13 @@ const getTikTokVideoId = (url: string) => {
   return match?.[1] ?? "";
 };
 
-const SocialSection = () => {
+const SocialSection = ({ data }: SocialSectionProps) => {
   const { ref, inView } = useInView(0.1);
+  const socialData = data || {};
+
+  const posts = Array.isArray(socialData.tiktokPosts)
+    ? (socialData.tiktokPosts as string[])
+    : fallbackPosts;
 
   useEffect(() => {
     if (document.getElementById("tiktok-embed-script")) return;
@@ -40,19 +49,19 @@ const SocialSection = () => {
         >
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="w-16 h-px bg-gradient-to-r from-transparent to-primary" />
-            <p className="text-xs tracking-[0.5em] uppercase text-primary">Social Media</p>
+            <p className="text-xs tracking-[0.5em] uppercase text-primary">{String(socialData.eyebrow || "Social Media")}</p>
             <div className="w-16 h-px bg-gradient-to-l from-transparent to-primary" />
           </div>
           <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            Social <span className="text-gradient-gold">Highlights</span>
+            {String(socialData.titleLine1 || "Social")} <span className="text-gradient-gold">{String(socialData.titleLine2 || "Highlights")}</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Real post previews using official TikTok post embed format.
+            {String(socialData.subtitle || "Real post previews using official TikTok post embed format.")}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TIKTOK_POSTS.map((url, i) => {
+          {posts.map((url, i) => {
             const videoId = getTikTokVideoId(url);
             return (
               <motion.div
