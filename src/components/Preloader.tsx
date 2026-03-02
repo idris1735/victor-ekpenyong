@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import veLogo from "@/assets/ve-logo-cropped.png";
 
 interface PreloaderProps {
   onComplete: () => void;
@@ -53,7 +54,7 @@ const Preloader = ({ onComplete }: PreloaderProps) => {
             />
           </div>
 
-          {/* Logo monogram reveal */}
+          {/* Logo reveal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={
@@ -64,14 +65,18 @@ const Preloader = ({ onComplete }: PreloaderProps) => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative z-10 mb-12"
           >
-            <motion.p
-              className="font-display text-6xl md:text-8xl font-bold text-primary"
+            <motion.img
+              src={veLogo}
+              alt="VE logo"
+              className="w-[220px] md:w-[280px] h-auto object-contain [filter:drop-shadow(0_0_30px_hsl(40_70%_50%/0.42))_brightness(1.12)]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-            >
-              VE<span className="text-foreground">.</span>
-            </motion.p>
+            />
+            <div
+              className="absolute inset-x-8 -bottom-4 h-12 blur-2xl pointer-events-none"
+              style={{ background: "radial-gradient(circle, hsl(40 70% 50% / 0.38), transparent 72%)" }}
+            />
           </motion.div>
 
           {/* Name reveal */}

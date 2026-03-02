@@ -8,6 +8,7 @@ import KenyonSection from "@/components/KenyonSection";
 import ImpactSection from "@/components/ImpactSection";
 import VisionSection from "@/components/VisionSection";
 import FoundersLetter from "@/components/FoundersLetter";
+import SocialSection from "@/components/SocialSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
@@ -29,6 +30,7 @@ const Index = () => {
       <ImpactSection />
       <VisionSection />
       <FoundersLetter />
+      <SocialSection />
       <ContactSection />
       <Footer />
     </div>

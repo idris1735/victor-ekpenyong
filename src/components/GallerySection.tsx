@@ -2,20 +2,20 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 
-import gallerySpeaking from "@/assets/gallery-speaking.png";
-import galleryField from "@/assets/gallery-field.png";
-import galleryBoardroom from "@/assets/gallery-boardroom.png";
-import galleryCommunity from "@/assets/gallery-community.png";
-import galleryAward from "@/assets/gallery-award.png";
-import galleryBlueprints from "@/assets/gallery-blueprints.png";
+import galleryEngineering from "@/assets/gallery-life-engineering.jpg";
+import galleryField from "@/assets/gallery-life-field.jpg";
+import galleryLeadership from "@/assets/gallery-life-leadership.jpg";
+import galleryCommunity from "@/assets/gallery-life-community.jpg";
+import galleryRecognition from "@/assets/gallery-life-recognition.jpg";
+import galleryPortrait from "@/assets/gallery-life-ve.jpg";
 
 const images = [
-  { src: gallerySpeaking, alt: "Keynote speaking at energy conference", label: "Speaking", span: "col-span-2 row-span-1" },
-  { src: galleryAward, alt: "Receiving industry award", label: "Recognition", span: "col-span-1 row-span-2" },
-  { src: galleryField, alt: "On-site at oil facility", label: "In the Field", span: "col-span-1 row-span-1" },
-  { src: galleryBlueprints, alt: "Engineering blueprints and design", label: "Engineering", span: "col-span-1 row-span-1" },
-  { src: galleryBoardroom, alt: "Boardroom leadership", label: "Leadership", span: "col-span-1 row-span-1" },
+  { src: galleryEngineering, alt: "Engineering leadership in action", label: "Engineering", span: "col-span-2 row-span-1" },
+  { src: galleryRecognition, alt: "Recognition moment", label: "Recognition", span: "col-span-1 row-span-2" },
+  { src: galleryField, alt: "Operations on the field", label: "In the Field", span: "col-span-1 row-span-1" },
   { src: galleryCommunity, alt: "Community engagement", label: "Community", span: "col-span-1 row-span-1" },
+  { src: galleryLeadership, alt: "Leadership presence", label: "Leadership", span: "col-span-1 row-span-1" },
+  { src: galleryPortrait, alt: "Dr. Victor portrait", label: "Dr. Victor", span: "col-span-1 row-span-1" },
 ];
 
 const GallerySection = () => {
@@ -40,15 +40,14 @@ const GallerySection = () => {
             A Life in <span className="text-gradient-gold">Frames</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-lg mx-auto">
-            Moments that define a legacy — from boardrooms to oil fields, from stages to communities.
+            Moments that define a legacy - from leadership to community impact.
           </p>
         </motion.div>
 
-        {/* Masonry grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 auto-rows-[250px] md:auto-rows-[280px]">
           {images.map((img, i) => (
             <motion.div
-              key={i}
+              key={img.label}
               initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 * i + 0.3, duration: 0.8 }}
@@ -60,28 +59,19 @@ const GallerySection = () => {
                 src={img.src}
                 alt={img.alt}
                 className="w-full h-full object-cover transition-transform duration-700"
-                animate={{
-                  scale: hoveredIdx === i ? 1.08 : 1,
-                }}
+                animate={{ scale: hoveredIdx === i ? 1.08 : 1 }}
                 transition={{ duration: 0.7 }}
               />
-              {/* Dark overlay */}
               <div
                 className={`absolute inset-0 transition-all duration-500 ${
-                  hoveredIdx === i
-                    ? "bg-background/40"
-                    : "bg-background/10"
+                  hoveredIdx === i ? "bg-background/40" : "bg-background/10"
                 }`}
               />
-              {/* Gold border on hover */}
               <div
                 className={`absolute inset-0 border-2 transition-all duration-500 ${
-                  hoveredIdx === i
-                    ? "border-primary/60"
-                    : "border-transparent"
+                  hoveredIdx === i ? "border-primary/60" : "border-transparent"
                 }`}
               />
-              {/* Label */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import { Heart, GraduationCap, Users } from "lucide-react";
-import philanthropy from "@/assets/philanthropy.png";
+import bigmanPhoto from "@/assets/gallery-life-bigman.jpg";
 
 const pillars = [
   {
@@ -34,8 +34,8 @@ const ImpactSection = () => {
             initial={{ scale: 1.1 }}
             animate={inView ? { scale: 1 } : {}}
             transition={{ duration: 2, ease: "easeOut" }}
-            src={philanthropy}
-            alt="Children in classroom - Victor & Helen Foundation"
+            src={bigmanPhoto}
+            alt="Dr. Victor Ekpenyong - Victor and Helen Foundation"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/80 hidden lg:block" />

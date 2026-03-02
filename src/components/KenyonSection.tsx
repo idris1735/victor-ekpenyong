@@ -2,6 +2,10 @@ import { motion } from "framer-motion";
 import { useInView } from "@/hooks/useInView";
 import kenyonHero from "@/assets/kenyon-hero.png";
 
+const KENYON_WEBSITE = "https://www.kenyon-international.com/";
+const KENYON_LOGO =
+  "https://www.kenyon-international.com/wp-content/uploads/2021/04/200x200-LOGO-SMOOTH.png";
+
 const capabilities = [
   { num: "01", title: "Well Intervention & Control", desc: "Advanced techniques for complex well scenarios across challenging environments." },
   { num: "02", title: "Asset Integrity Solutions", desc: "Comprehensive integrity management ensuring operational safety and longevity." },
@@ -44,6 +48,29 @@ const KenyonSection = () => {
                 <br />
                 <span className="text-gradient-gold">International</span>
               </h2>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.55 }}
+                className="mt-6 flex flex-wrap items-center gap-4"
+              >
+                <div className="w-12 h-12 rounded-lg bg-white/95 p-1.5 ring-1 ring-primary/25 shadow-[0_10px_25px_hsl(220_20%_6%/0.45)]">
+                  <img
+                    src={KENYON_LOGO}
+                    alt="Kenyon International logo"
+                    className="w-full h-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+                <a
+                  href={KENYON_WEBSITE}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-7 py-3 border border-primary/45 text-primary text-xs tracking-[0.28em] uppercase hover:bg-primary hover:text-primary-foreground transition-all duration-500"
+                >
+                  Check Out Kenyon
+                </a>
+              </motion.div>
             </motion.div>
           </div>
         </div>

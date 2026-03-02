@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import veLogo from "@/assets/ve-logo-cropped.png";
 
 const navItems = ["About", "Kenyon", "Impact", "Vision", "Contact"];
 
@@ -34,9 +35,16 @@ const Navigation = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-12">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="font-display text-2xl font-bold tracking-wider text-primary"
+            className="flex items-center"
+            aria-label="Go to top"
           >
-            VE<span className="text-foreground">.</span>
+            <img
+              src={veLogo}
+              alt="VE logo"
+              className={`h-8 md:h-8 w-auto object-contain transition-all duration-500 [filter:drop-shadow(0_0_16px_hsl(40_70%_50%/0.35))_brightness(1.14)_contrast(1.06)] ${
+                scrolled ? "opacity-90" : "opacity-100"
+              }`}
+            />
           </button>
           <div className="hidden md:flex items-center gap-10">
             {navItems.map((item, i) => (

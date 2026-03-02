@@ -6,6 +6,7 @@ import engineering from "@/assets/engineering.png";
 const AboutSection = () => {
   const { ref, inView } = useInView(0.1);
   const years = useCounter(15, 2000, inView);
+  const schools = useCounter(3, 1800, inView);
 
   return (
     <section id="about" ref={ref} className="relative overflow-hidden">
@@ -22,11 +23,39 @@ const AboutSection = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 1 }}
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-0 flex items-center justify-center px-6"
         >
-          <div className="text-center">
-            <p className="font-display text-8xl md:text-9xl font-bold text-primary/20">{years}+</p>
-            <p className="text-sm tracking-[0.4em] uppercase text-primary mt-2">Years of Excellence</p>
+          <div className="w-full max-w-5xl">
+            <div className="text-center mb-8">
+              <p className="text-sm tracking-[0.4em] uppercase text-primary/90">Years of Excellence</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+              {[
+                { num: `${years}+`, label: "Years in Energy" },
+                { num: `${schools}`, label: "Elite Business Schools" },
+                { num: "∞", label: "Lives Impacted" },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 24, scale: 0.96 }}
+                  animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+                  transition={{ delay: 0.15 + i * 0.12, duration: 0.7 }}
+                  className="relative p-6 md:p-7 text-center bg-background/45 backdrop-blur-md border border-primary/30 rounded-xl shadow-[0_0_35px_hsl(40_70%_50%/0.16)]"
+                >
+                  <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent" />
+                  <motion.p
+                    animate={stat.num === "∞" && inView ? { scale: [1, 1.08, 1] } : {}}
+                    transition={stat.num === "∞" ? { repeat: Infinity, duration: 2.4, ease: "easeInOut" } : {}}
+                    className="font-display text-5xl md:text-6xl font-bold text-primary drop-shadow-[0_0_24px_hsl(40_70%_50%/0.55)]"
+                  >
+                    {stat.num}
+                  </motion.p>
+                  <p className="text-[11px] md:text-xs tracking-[0.26em] uppercase text-foreground/90 mt-2">
+                    {stat.label}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
