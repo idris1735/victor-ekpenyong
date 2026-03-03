@@ -67,7 +67,25 @@ const HeroSection = ({ entered, data }: HeroSectionProps) => {
         <div className="absolute inset-0" style={{ background: "linear-gradient(130deg, transparent 42%, hsl(40 70% 50% / 0.04) 100%)" }} />
       </motion.div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-10 md:pb-14 pt-28 md:pt-32">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-10 md:pb-14 pt-24 md:pt-32">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={entered ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 1, delay: 0.45, ease: "easeOut" }}
+          className="lg:hidden relative mx-auto mb-6 w-[min(88vw,440px)] pointer-events-none"
+        >
+          <img
+            src={portraitImage}
+            alt="Dr. Victor Ekpenyong"
+            className="w-full h-auto object-contain object-top select-none"
+            style={{
+              WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 97%)",
+              maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 97%)",
+            }}
+          />
+          <div className="absolute inset-x-0 bottom-0 h-[44%] bg-gradient-to-t from-background via-background/80 to-transparent" />
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={entered ? { opacity: 1 } : {}}
