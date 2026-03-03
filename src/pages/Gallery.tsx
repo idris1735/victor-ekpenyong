@@ -14,12 +14,12 @@ import galleryRecognition from "@/assets/gallery-life-recognition.jpg";
 import galleryPortrait from "@/assets/gallery-life-ve.jpg";
 
 const fallbackImages = [
-  { src: galleryEngineering, alt: "Engineering leadership in action", label: "Engineering", span: "md:col-span-2" },
-  { src: galleryRecognition, alt: "Recognition moment", label: "Recognition", span: "md:row-span-2" },
-  { src: galleryField, alt: "Operations on the field", label: "In the Field", span: "" },
-  { src: galleryCommunity, alt: "Community engagement", label: "Community", span: "" },
-  { src: galleryLeadership, alt: "Leadership presence", label: "Leadership", span: "" },
-  { src: galleryPortrait, alt: "Dr. Victor portrait", label: "Portrait", span: "" },
+  { src: galleryEngineering, alt: "Engineering leadership in action" },
+  { src: galleryRecognition, alt: "Recognition moment" },
+  { src: galleryField, alt: "Operations on the field" },
+  { src: galleryCommunity, alt: "Community engagement" },
+  { src: galleryLeadership, alt: "Leadership presence" },
+  { src: galleryPortrait, alt: "Dr. Victor portrait" },
 ];
 
 const GalleryPage = () => {
@@ -34,23 +34,46 @@ const GalleryPage = () => {
     queryFn: cmsApi.getSite,
     retry: false,
   });
+  const mediaQuery = useQuery({
+    queryKey: ["cms", "gallery-public-media"],
+    queryFn: () => cmsApi.getPublicMedia(),
+    retry: false,
+  });
 
   const sectionMap = toSectionMap(pageQuery.data);
   const galleryData = (sectionMap.gallery as Record<string, unknown>) || {};
   const imagesInput = Array.isArray(galleryData.images)
-    ? (galleryData.images as Array<{ src?: string; alt?: string; label?: string; span?: string }>)
-    : fallbackImages;
+    ? (galleryData.images as Array<{ src?: string; alt?: string }>)
+    : [];
 
-  const images = useMemo(
+  const curatedImages = useMemo(
     () =>
-      (imagesInput.length > 0 ? imagesInput : fallbackImages).map((image, index) => ({
-        src: image.src || fallbackImages[index % fallbackImages.length].src,
-        alt: image.alt || fallbackImages[index % fallbackImages.length].alt,
-        label: image.label || fallbackImages[index % fallbackImages.length].label,
-        span: image.span || fallbackImages[index % fallbackImages.length].span,
-      })),
+      imagesInput
+        .filter((image) => typeof image.src === "string" && image.src.trim().length > 0)
+        .map((image) => ({
+          src: String(image.src),
+          alt: String(image.alt || "Gallery image"),
+        })),
     [imagesInput],
   );
+  const uploadedImages = useMemo(
+    () =>
+      (mediaQuery.data?.items || []).map((media) => ({
+        src: media.path,
+        alt: media.alt_text || media.original_name || "Gallery image",
+      })),
+    [mediaQuery.data?.items],
+  );
+  const images = useMemo(() => {
+    const merged = [...curatedImages, ...uploadedImages];
+    const uniqueBySrc = new Map<string, { src: string; alt: string }>();
+    for (const image of merged) {
+      if (!uniqueBySrc.has(image.src)) {
+        uniqueBySrc.set(image.src, image);
+      }
+    }
+    return uniqueBySrc.size > 0 ? Array.from(uniqueBySrc.values()) : fallbackImages;
+  }, [curatedImages, uploadedImages]);
 
   const activeImage = activeIndex === null ? null : images[activeIndex];
 
@@ -85,12 +108,6 @@ const GalleryPage = () => {
               >
                 Back Home
               </Link>
-              <a
-                href="/backend/media"
-                className="border border-primary/20 px-6 py-3 text-xs tracking-[0.25em] uppercase text-muted-foreground hover:text-primary"
-              >
-                Curate in Backend
-              </a>
             </div>
           </motion.div>
         </div>
@@ -105,26 +122,21 @@ const GalleryPage = () => {
             <p className="text-xs text-muted-foreground">Click any frame to view full artwork</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 auto-rows-[260px] md:auto-rows-[280px] gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {images.map((image, index) => (
               <motion.button
-                key={`${image.label}-${index}`}
+                key={`${image.src}-${index}`}
                 onClick={() => setActiveIndex(index)}
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.06 * index }}
-                className={`group relative overflow-hidden border border-primary/20 bg-card/40 text-left ${image.span}`}
+                className="group relative aspect-[4/5] overflow-hidden border border-primary/20 bg-card/40 text-left"
               >
                 <img
                   src={image.src}
                   alt={image.alt}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                <div className="absolute left-4 right-4 bottom-4">
-                  <p className="text-[11px] tracking-[0.3em] uppercase text-primary mb-2">{image.label}</p>
-                  <p className="text-sm text-foreground/90">{image.alt}</p>
-                </div>
                 <div className="absolute inset-0 ring-1 ring-primary/0 group-hover:ring-primary/60 transition-all duration-500" />
               </motion.button>
             ))}
@@ -147,10 +159,9 @@ const GalleryPage = () => {
             >
               <X className="h-5 w-5" />
             </button>
-            <div className="mx-auto h-full max-w-6xl grid md:grid-cols-[3fr_1fr] gap-6 items-center">
+            <div className="mx-auto h-full max-w-6xl grid md:grid-cols-[4fr_1fr] gap-6 items-center">
               <img src={activeImage.src} alt={activeImage.alt} className="w-full max-h-[78vh] object-contain border border-primary/20" />
               <div>
-                <p className="text-xs tracking-[0.28em] uppercase text-primary mb-3">{activeImage.label}</p>
                 <p className="text-lg text-foreground mb-6">{activeImage.alt}</p>
                 <p className="text-sm text-muted-foreground">
                   Curated Frame {activeIndex + 1} of {images.length}

@@ -756,6 +756,23 @@ api.post("/uploads", requireAuth, requireCsrf, upload.single("file"), async (req
   }
 });
 
+api.get("/media/public", async (req, res, next) => {
+  try {
+    const limit = Math.max(1, Math.min(300, Number(req.query.limit || 180)));
+    const result = await query(
+      `SELECT id, filename, original_name, path, mime_type, size_bytes, alt_text, created_at
+       FROM media
+       WHERE mime_type LIKE 'image/%' AND mime_type <> 'image/svg+xml'
+       ORDER BY created_at DESC
+       LIMIT $1`,
+      [limit],
+    );
+    return res.json({ items: result.rows, limit });
+  } catch (error) {
+    return next(error);
+  }
+});
+
 api.get("/media", requireAuth, async (_req, res, next) => {
   try {
     const result = await query("SELECT * FROM media ORDER BY created_at DESC");

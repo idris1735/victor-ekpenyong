@@ -216,6 +216,8 @@ export const cmsApi = {
     }),
 
   getMedia: () => apiRequest<{ items: CmsMediaItem[] }>("/api/media"),
+  getPublicMedia: (limit = 180) =>
+    apiRequest<{ items: CmsMediaItem[]; limit: number }>(`/api/media/public?limit=${limit}`),
   uploadMedia: (formData: FormData) =>
     apiRequest<CmsMediaItem>("/api/uploads", {
       method: "POST",
